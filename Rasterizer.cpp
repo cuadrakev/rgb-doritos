@@ -48,8 +48,9 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
                     float lambda2 = ((dy31 * cx3) + ((-dx31) * cy3)) / 
                                      ((dy31 * dx23) + ((-dx31) * dy23));
 
-                    //lambda1 = std::trunc((lambda1 * 10)) * 0.1f;
-                    //lambda2 = std::trunc((lambda2 * 10)) * 0.1f;
+                    // if I uncomment these, it works
+                    //lambda1 = std::trunc((lambda1 * 20)) * 0.05f;
+                    //lambda2 = std::trunc((lambda2 * 20)) * 0.05f;
 
                     float lambda3 = (1 - lambda1 - lambda2);
 
@@ -65,7 +66,7 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
                     image[i][j][2] = R;
                     image[i][j][3] = 0xFF;
                 }
-                else if (triangleCheckInv(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3)) //
+                else if (triangleCheckInv(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3)) 
                 {
                     image[i][j][0] = 0xFF;
                     image[i][j][1] = 0x00;
@@ -80,7 +81,7 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
                     image[i][j][3] = 0xFF;
                 }
             }
-            else //
+            else 
             {
                 image[i][j][0] = 0xFF;
                 image[i][j][1] = 0xFF;

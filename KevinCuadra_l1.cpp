@@ -3,8 +3,8 @@
 #include "Rasterizer.h"
 #include "BMPUtility.h"
 
-const int WIDTH = 256;
-const int HEIGHT = 256;
+const int WIDTH = 640;
+const int HEIGHT = 480;
 
 IMAGE2D initImage()
 {
@@ -36,15 +36,15 @@ void deleteImage(IMAGE2D im)
 
 int main()
 {
-    int color1 = 0xFF0000; //rgb
-    int color2 = 0x00FF00; 
+    int color1 = 0xFF8000; //rgb
+    int color2 = 0x60FF60; 
     int color3 = 0x0000FF; 
 
     IMAGE2D image = initImage();
 
     Point p1 = Point(-0.7f, -0.8f);
-    Point p2 = Point(-1.4f, 0.5f);
-    Point p3 = Point(0.0f, 0.9f); 
+    Point p2 = Point(-0.5f, 0.6f);
+    Point p3 = Point(0.6f, 1.1f); 
 
     Rasterizer* rasterizer = new Rasterizer(WIDTH, HEIGHT);
 
@@ -54,6 +54,7 @@ int main()
 
     printf("Finished");
 
+    delete rasterizer;
     deleteImage(image);
 
     return 0;

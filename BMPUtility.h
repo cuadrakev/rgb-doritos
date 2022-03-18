@@ -13,7 +13,7 @@ void saveBMPFile(const int& width, const int& height, IMAGE2D image)
 {
     std::ofstream imageFile;
 
-    imageFile.open("generatedImage.bmp");
+    imageFile.open("generatedImage.bmp", std::ios_base::binary);
 
     //int padSize = (4 - (width * 3) % 4) % 4;
     int sizeData = width * height * BYTES_PER_PIXEL;// +height * padSize;
