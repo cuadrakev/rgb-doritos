@@ -3,7 +3,31 @@
 
 //#include <iostream>
 
-void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int c3, IMAGE2D image)
+void Rasterizer::clearBuffer(int color)
+{
+    unsigned char r, g, b;
+
+    colorToComponents(r, g, b, color);
+
+    for (int i = 0; i < WIDTH; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            colorBuffer[i][j][0] = b;
+            colorBuffer[i][j][1] = g;
+            colorBuffer[i][j][2] = r;
+            colorBuffer[i][j][3] = 0xFF;
+            depthBuffer[i][j][0] = 0xFF;
+        }
+    }
+}
+
+void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c)
+{
+    drawTriangle(p1, p2, p3, c, c, c);
+}
+
+void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c1, int c2, int c3)
 {
     unsigned char r1, r2, r3, g1, g2, g3, b1, b2, b3;
     colorToComponents(r1, g1, b1, c1);
@@ -23,7 +47,15 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
 
     float dx12, dx23, dx31, dy12, dy23, dy31;
 
+    float* diffs[6] = { &dx12, &dx23, &dx31, &dy12, &dy23, &dy31 };
+
     defineDiffs(dx12, dx23, dx31, dy12, dy23, dy31, p1, p2, p3);
+
+    bool lt1 = false, lt2 = false, lt3 = false;
+
+    lt1 = checkLeftTop(dx12, dy12);
+    lt2 = checkLeftTop(dx23, dy23);
+    lt3 = checkLeftTop(dx31, dy31);
 
     for (int i = 0; i < WIDTH; i++)
     {
@@ -41,7 +73,7 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
                 float cx3 = i_canon - p3.x;
                 float cy3 = j_canon - p3.y;
 
-                if (triangleCheck(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3))
+                if (triangleCheck(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3, lt1, lt2, lt3))
                 {
                     float lambda1 = ((dy23 * cx3) + ((-dx23) * cy3)) / 
                                      ((dy23 * (-dx31)) + ((-dx23) * (-dy31)));
@@ -58,36 +90,44 @@ void Rasterizer::drawTriangle(Point p1, int c1, Point p2, int c2, Point p3, int 
                     unsigned char G = lambda1 * g1 + lambda2 * g2 + lambda3 * g3;
                     unsigned char R = lambda1 * r1 + lambda2 * r2 + lambda3 * r3;
 
+                    float depth = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
+
+                    depth = convertToRender(depth, 255);
+
                     //std::cout << (int)R << " " << (int)G << " " << (int)B << '\n';
                     //std::cout << lambda1 << " " << lambda2 << " " << lambda3 << '\n';
 
-                    image[i][j][0] = B;
-                    image[i][j][1] = G;
-                    image[i][j][2] = R;
-                    image[i][j][3] = 0xFF;
+                    if (depth < depthBuffer[i][j][0])
+                    {
+                        colorBuffer[i][j][0] = B;
+                        colorBuffer[i][j][1] = G;
+                        colorBuffer[i][j][2] = R;
+                        colorBuffer[i][j][3] = 0xFF;
+                        depthBuffer[i][j][0] = depth;
+                    }
                 }
                 else if (triangleCheckInv(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3)) 
                 {
-                    image[i][j][0] = 0xFF;
-                    image[i][j][1] = 0x00;
-                    image[i][j][2] = 0xFF;
-                    image[i][j][3] = 0xFF;
+                    colorBuffer[i][j][0] = 0xFF;
+                    colorBuffer[i][j][1] = 0x00;
+                    colorBuffer[i][j][2] = 0xFF;
+                    colorBuffer[i][j][3] = 0xFF;
                 }
-                else
-                {
-                    image[i][j][0] = 0x00;
-                    image[i][j][1] = 0x00;
-                    image[i][j][2] = 0x00;
-                    image[i][j][3] = 0xFF;
-                }
+                //else
+                //{
+                //    image[i][j][0] = 0x00;
+                //    image[i][j][1] = 0x00;
+                //    image[i][j][2] = 0x00;
+                //    image[i][j][3] = 0xFF;
+                //}
             }
-            else 
-            {
-                image[i][j][0] = 0xFF;
-                image[i][j][1] = 0xFF;
-                image[i][j][2] = 0xFF;
-                image[i][j][3] = 0xFF;
-            }
+            //else 
+            //{
+            //    image[i][j][0] = 0xFF;
+            //    image[i][j][1] = 0xFF;
+            //    image[i][j][2] = 0xFF;
+            //    image[i][j][3] = 0xFF;
+            //}
         }
     }
 }
@@ -134,25 +174,58 @@ float Rasterizer::convertToCanon(float pos, int dim)
     return 2 * pos / dim - 1;
 }
 
-bool Rasterizer::halfPlaneCheck(float dx, float dy, float cx, float cy)
+bool Rasterizer::halfPlaneCheck(float dx, float dy, float cx, float cy, bool lt)
 {
-    if (dx * cy - dy * cx > 0)
+    if ((!lt && dx * cy - dy * cx > 0) || (lt && dx * cy - dy * cx >= 0))
         return true;
     return false;
 }
 
 bool Rasterizer::triangleCheck(float dx12, float dx23, float dx31, float dy12, float dy23, float dy31,
-    float cx1, float cx2, float cx3, float cy1, float cy2, float cy3)
+    float cx1, float cx2, float cx3, float cy1, float cy2, float cy3,
+    bool lt1, bool lt2, bool lt3)
 {
-    return halfPlaneCheck(dx12, dy12, cx1, cy1) && halfPlaneCheck(dx23, dy23, cx2, cy2) && halfPlaneCheck(dx31, dy31, cx3, cy3);
+    return halfPlaneCheck(dx12, dy12, cx1, cy1, lt1) && halfPlaneCheck(dx23, dy23, cx2, cy2, lt2) && halfPlaneCheck(dx31, dy31, cx3, cy3, lt3);
 }
 
 bool Rasterizer::triangleCheckInv(float dx12, float dx23, float dx31, float dy12, float dy23, float dy31,
     float cx1, float cx2, float cx3, float cy1, float cy2, float cy3)
 {
-    return !halfPlaneCheck(dx12, dy12, cx1, cy1) && !halfPlaneCheck(dx23, dy23, cx2, cy2) && !halfPlaneCheck(dx31, dy31, cx3, cy3);
+    return !halfPlaneCheck(dx12, dy12, cx1, cy1, false) && !halfPlaneCheck(dx23, dy23, cx2, cy2, false) && !halfPlaneCheck(dx31, dy31, cx3, cy3, false);
 }
 
+bool Rasterizer::checkLeftTop(const float& dx, const float& dy)
+{
+    return (dy < 0 || (dy == 0 && dx > 0));
+}
+
+IMAGE2D Rasterizer::initImage(int b)
+{
+    IMAGE2D im = new unsigned char** [WIDTH];
+    for (int i = 0; i < WIDTH; i++)
+    {
+        im[i] = new unsigned char* [HEIGHT];
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            im[i][j] = new unsigned char[b];
+        }
+    }
+
+    return im;
+}
+
+void Rasterizer::deleteImage(IMAGE2D im)
+{
+    for (int i = 0; i < WIDTH; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            delete[] im[i][j];
+        }
+        delete[] im[i];
+    }
+    delete[] im;
+}
 
 //legacy
 // 
