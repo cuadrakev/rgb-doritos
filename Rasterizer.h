@@ -1,23 +1,26 @@
 #pragma once
+#include "float3.h"
+#include "VertexProcessor.h"
 
 typedef unsigned char*** IMAGE2D;
 
-struct Point {
-    float x, y, z;
-
-    Point(float x, float y, float z = 0) : x(x), y(y) , z(z) {}
-};
+//struct Point {
+//    float x, y, z;
+//
+//    Point(float x, float y, float z = 0) : x(x), y(y) , z(z) {}
+//};
 
 class Rasterizer
 {
 public:
 
-    Rasterizer(int w, int h, int b)
+    Rasterizer(int w, int h, int b, VertexProcessor* vp)
     {
         WIDTH = w;
         HEIGHT = h;
         colorBuffer = initImage(b);
         depthBuffer = initImage(1);
+        this->vp = vp;
     }
 
     ~Rasterizer()
@@ -26,11 +29,11 @@ public:
         deleteImage(depthBuffer);
     }
 
-	void drawTriangle(Point p1, Point p2, Point p3, int c1, int c2, int c3);
+	void drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, int c3);
 
     void clearBuffer(int color);
 
-	void drawTriangle(Point p1, Point p2, Point p3, int c);
+	void drawTriangle(float3 p1, float3 p2, float3 p3, int c);
 
     IMAGE2D colorBuffer;
 
@@ -40,9 +43,11 @@ private:
 
     IMAGE2D depthBuffer;
 
-	void trimTriangle(int& minx, int& miny, int& maxx, int& maxy, Point p1, Point p2, Point p3);
+    VertexProcessor* vp;
 
-    void defineDiffs(float& dx12, float& dx23, float& dx31, float& dy12, float& dy23, float& dy31, Point p1, Point p2, Point p3);
+	void trimTriangle(int& minx, int& miny, int& maxx, int& maxy, float3 p1, float3 p2, float3 p3);
+
+    void defineDiffs(float& dx12, float& dx23, float& dx31, float& dy12, float& dy23, float& dy31, float3 p1, float3 p2, float3 p3);
 
     void colorToComponents(unsigned char& r, unsigned char& g, unsigned char& b, int color);
 

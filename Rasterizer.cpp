@@ -1,8 +1,6 @@
 #include "Rasterizer.h"
 #include <algorithm>
 
-//#include <iostream>
-
 void Rasterizer::clearBuffer(int color)
 {
     unsigned char r, g, b;
@@ -22,13 +20,18 @@ void Rasterizer::clearBuffer(int color)
     }
 }
 
-void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c)
+void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c)
 {
     drawTriangle(p1, p2, p3, c, c, c);
 }
 
-void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c1, int c2, int c3)
+void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, int c3)
 {
+    //transform points
+    p1 = vp->getObj2Proj() * p1;
+    p2 = vp->getObj2Proj() * p2;
+    p3 = vp->getObj2Proj() * p3;
+    
     unsigned char r1, r2, r3, g1, g2, g3, b1, b2, b3;
     colorToComponents(r1, g1, b1, c1);
     colorToComponents(r2, g2, b2, c2);
@@ -102,6 +105,9 @@ void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c1, int c2, int 
                         colorBuffer[i][j][0] = B;
                         colorBuffer[i][j][1] = G;
                         colorBuffer[i][j][2] = R;
+                        /*colorBuffer[i][j][0] = depth;
+                        colorBuffer[i][j][1] = depth;
+                        colorBuffer[i][j][2] = depth;*/
                         colorBuffer[i][j][3] = 0xFF;
                         depthBuffer[i][j][0] = depth;
                     }
@@ -132,7 +138,7 @@ void Rasterizer::drawTriangle(Point p1, Point p2, Point p3, int c1, int c2, int 
     }
 }
 
-void Rasterizer::trimTriangle(int& minx, int& miny, int& maxx, int& maxy, Point p1, Point p2, Point p3)
+void Rasterizer::trimTriangle(int& minx, int& miny, int& maxx, int& maxy, float3 p1, float3 p2, float3 p3)
 {
     // defining the search rectangle
     minx = convertToRender(std::min({ p1.x, p2.x, p3.x }), WIDTH);
@@ -147,7 +153,7 @@ void Rasterizer::trimTriangle(int& minx, int& miny, int& maxx, int& maxy, Point 
     maxy = std::min(maxy, HEIGHT - 1);
 }
 
-void Rasterizer::defineDiffs(float& dx12, float& dx23, float& dx31, float& dy12, float& dy23, float& dy31, Point p1, Point p2, Point p3)
+void Rasterizer::defineDiffs(float& dx12, float& dx23, float& dx31, float& dy12, float& dy23, float& dy31, float3 p1, float3 p2, float3 p3)
 {
     dx12 = p1.x - p2.x;
     dx23 = p2.x - p3.x;

@@ -21,6 +21,24 @@
     <ClCompile Include="Rasterizer.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="VertexProcessor.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3x3.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4x4.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\int3.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -30,6 +48,27 @@
       <Filter>Pliki źródłowe</Filter>
     </ClInclude>
     <ClInclude Include="Rasterizer.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexProcessor.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3x3.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4x4.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\int3.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\math_all.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
