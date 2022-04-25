@@ -41,13 +41,6 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
 
     trimTriangle(minx, miny, maxx, maxy, p1, p2, p3);
 
-    //float x1 = convertToRender(p1.x, WIDTH);
-    //float x2 = convertToRender(p2.x, WIDTH);
-    //float x3 = convertToRender(p3.x, WIDTH);
-    //float y1 = convertToRender(p1.y, HEIGHT);
-    //float y2 = convertToRender(p2.y, HEIGHT);
-    //float y3 = convertToRender(p3.y, HEIGHT);
-
     float dx12, dx23, dx31, dy12, dy23, dy31;
 
     float* diffs[6] = { &dx12, &dx23, &dx31, &dy12, &dy23, &dy31 };
@@ -83,10 +76,6 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
                     float lambda2 = ((dy31 * cx3) + ((-dx31) * cy3)) / 
                                      ((dy31 * dx23) + ((-dx31) * dy23));
 
-                    // if I uncomment these, it works
-                    //lambda1 = std::trunc((lambda1 * 20)) * 0.05f;
-                    //lambda2 = std::trunc((lambda2 * 20)) * 0.05f;
-
                     float lambda3 = (1 - lambda1 - lambda2);
 
                     unsigned char B = lambda1 * b1 + lambda2 * b2 + lambda3 * b3;
@@ -96,9 +85,6 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
                     float depth = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
 
                     depth = convertToRender(depth, 255);
-
-                    //std::cout << (int)R << " " << (int)G << " " << (int)B << '\n';
-                    //std::cout << lambda1 << " " << lambda2 << " " << lambda3 << '\n';
 
                     if (depth < depthBuffer[i][j][0])
                     {
@@ -112,30 +98,24 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
                         depthBuffer[i][j][0] = depth;
                     }
                 }
-                else if (triangleCheckInv(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3)) 
-                {
-                    colorBuffer[i][j][0] = 0xFF;
-                    colorBuffer[i][j][1] = 0x00;
-                    colorBuffer[i][j][2] = 0xFF;
-                    colorBuffer[i][j][3] = 0xFF;
-                }
-                //else
+                //else if (triangleCheckInv(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3)) 
                 //{
-                //    image[i][j][0] = 0x00;
-                //    image[i][j][1] = 0x00;
-                //    image[i][j][2] = 0x00;
-                //    image[i][j][3] = 0xFF;
+                //    colorBuffer[i][j][0] = 0xFF;
+                //    colorBuffer[i][j][1] = 0x00;
+                //    colorBuffer[i][j][2] = 0xFF;
+                //    colorBuffer[i][j][3] = 0xFF;
                 //}
             }
-            //else 
-            //{
-            //    image[i][j][0] = 0xFF;
-            //    image[i][j][1] = 0xFF;
-            //    image[i][j][2] = 0xFF;
-            //    image[i][j][3] = 0xFF;
-            //}
         }
     }
+}
+
+void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, float3 c1, float3 c2, float3 c3)
+{
+    int color1 = vectorToColors(c1);
+    int color2 = vectorToColors(c2);
+    int color3 = vectorToColors(c3);
+    drawTriangle(p1, p2, p3, color1, color2, color3);
 }
 
 void Rasterizer::trimTriangle(int& minx, int& miny, int& maxx, int& maxy, float3 p1, float3 p2, float3 p3)
@@ -168,6 +148,15 @@ void Rasterizer::colorToComponents(unsigned char& r, unsigned char& g, unsigned 
     r = (color & 0xFF0000) >> 16;
     g = (color & 0x00FF00) >> 8;
     b = color & 0x0000FF;
+}
+
+int Rasterizer::vectorToColors(float3 vec)
+{
+    int red = 0xFF0000 * vec.r;
+    int green = 0xFF00 * vec.g;
+    int blue = 0xFF * vec.b;
+
+    return (red & 0xFF0000) + (green & 0xFF00) + blue;
 }
 
 int Rasterizer::convertToRender(float pos, int dim)
@@ -232,29 +221,3 @@ void Rasterizer::deleteImage(IMAGE2D im)
     }
     delete[] im;
 }
-
-//legacy
-// 
-//bool halfPlaneCheck(Point* p1, Point* p2, Point* current)
-//{
-//    float x1Prim = convertToRender(p1->x, WIDTH);
-//    float x2Prim = convertToRender(p2->x, WIDTH);
-//    float y1Prim = convertToRender(p1->y, HEIGHT);
-//    float y2Prim = convertToRender(p2->y, HEIGHT);
-//
-//    float dx = x2Prim - x1Prim;
-//    float dy = y2Prim - y1Prim;
-//    if(dx*(current->y - y1Prim) - dy*(current->x - x1Prim) > 0)
-//        return true;
-//    return false;
-//}
-
-//bool triangleCheck(Point* p1, Point* p2, Point* p3, Point* current)
-//{
-//    return halfPlaneCheck(p2, p1, current) && halfPlaneCheck(p3, p2, current) && halfPlaneCheck(p1, p3, current);
-//}
-//
-//bool triangleCheckInv(Point* p1, Point* p2, Point* p3, Point* current)
-//{
-//    return !halfPlaneCheck(p2, p1, current) && !halfPlaneCheck(p3, p2, current) && !halfPlaneCheck(p1, p3, current);
-//}

@@ -140,25 +140,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cone.cpp" />
+    <ClCompile Include="Cylinder.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3.cpp" />
     <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3x3.cpp" />
     <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4.cpp" />
     <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4x4.cpp" />
     <ClCompile Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\int3.cpp" />
     <ClCompile Include="KevinCuadra_l1.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="SimpleTriangle.cpp" />
+    <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Torus.cpp" />
     <ClCompile Include="VertexProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPUtility.h" />
+    <ClInclude Include="Cone.h" />
+    <ClInclude Include="Cylinder.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float3x3.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\float4x4.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\int3.h" />
     <ClInclude Include="F:\Users\user\source\repos\FGK_1\FGK_1\Math\math_all.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SimpleTriangle.h" />
+    <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Torus.h" />
     <ClInclude Include="VertexProcessor.h" />
   </ItemGroup>
   <ItemGroup>

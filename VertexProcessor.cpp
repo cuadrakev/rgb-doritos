@@ -33,6 +33,9 @@ void VertexProcessor::setLookat(float3 eye, float3 center, float3 up)
 	float4x4 m = float4x4::identity4x4();
 	m.setColumn(3, float4(eye));
 	world2view = world2view * m;
+
+	viewPos = eye;
+	viewDir = f;
 }
 
 void VertexProcessor::translate(float3 t)
@@ -91,4 +94,9 @@ void VertexProcessor::rotate(float angle, float3 axis)
 void VertexProcessor::resetTransform()
 {
 	obj2world = float4x4::identity4x4();
+}
+
+float3x3 VertexProcessor::getNormalMatrix()
+{
+	return obj2world.invert().transpose().subMatrix(3, 3);
 }

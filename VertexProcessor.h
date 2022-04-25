@@ -9,6 +9,9 @@ public:
 	float4x4 world2view;
 	float4x4 view2proj;
 
+	float3 viewPos;
+	float3 viewDir;
+
 	VertexProcessor();
 
 	void setPerspective(float fovy, float aspect, float near, float far);
@@ -24,5 +27,7 @@ public:
 	void resetTransform();
 
 	float4x4 getObj2Proj() { return view2proj * world2view * obj2world; }
+
+	float3x3 getNormalMatrix();
 };
 
