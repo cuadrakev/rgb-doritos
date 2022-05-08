@@ -15,7 +15,7 @@ void Rasterizer::clearBuffer(int color)
             colorBuffer[i][j][1] = g;
             colorBuffer[i][j][2] = r;
             colorBuffer[i][j][3] = 0xFF;
-            depthBuffer[i][j][0] = 0xFF;
+            depthBuffer[i][j][0] = 0x00;
         }
     }
 }
@@ -82,6 +82,21 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
                     unsigned char G = lambda1 * g1 + lambda2 * g2 + lambda3 * g3;
                     unsigned char R = lambda1 * r1 + lambda2 * r2 + lambda3 * r3;
 
+                    //float3 colorA;
+                    //float3 colorB;
+                    //float3 colorC;
+
+                    //for (Light* l : lightsList)
+                    //{
+                    //    colorA += l->Calculate(&triangle.a, vp);
+                    //    colorB += l->Calculate(&triangle.b, vp);
+                    //    colorC += l->Calculate(&triangle.c, vp);
+                    //}
+
+                    //colorA.saturate();
+                    //colorB.saturate();
+                    //colorC.saturate();
+
                     float depth = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
 
                     depth = convertToRender(depth, 255);
@@ -105,6 +120,101 @@ void Rasterizer::drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, i
                 //    colorBuffer[i][j][2] = 0xFF;
                 //    colorBuffer[i][j][3] = 0xFF;
                 //}
+            }
+        }
+    }
+}
+
+void Rasterizer::drawTriangle(Vertex v1, Vertex v2, Vertex v3, int c)
+{
+    float3 p1 = v1.pos;
+    float3 p2 = v2.pos;
+    float3 p3 = v3.pos;
+    //transform points
+    p1 = vp->getObj2Proj() * p1;
+    p2 = vp->getObj2Proj() * p2;
+    p3 = vp->getObj2Proj() * p3;
+
+    unsigned char r, g, b;
+    colorToComponents(r, g, b, c);
+
+    int minx, miny, maxx, maxy;
+
+    trimTriangle(minx, miny, maxx, maxy, p1, p2, p3);
+
+    float dx12, dx23, dx31, dy12, dy23, dy31;
+
+    float* diffs[6] = { &dx12, &dx23, &dx31, &dy12, &dy23, &dy31 };
+
+    defineDiffs(dx12, dx23, dx31, dy12, dy23, dy31, p1, p2, p3);
+
+    bool lt1 = false, lt2 = false, lt3 = false;
+
+    lt1 = checkLeftTop(dx12, dy12);
+    lt2 = checkLeftTop(dx23, dy23);
+    lt3 = checkLeftTop(dx31, dy31);
+
+    for (int i = 0; i < WIDTH; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            if (i >= minx && i <= maxx && j >= miny && j <= maxy)
+            {
+                float i_canon = convertToCanon((float)i, WIDTH);
+                float j_canon = convertToCanon((float)j, HEIGHT);
+
+                float cx1 = i_canon - p1.x;
+                float cy1 = j_canon - p1.y;
+                float cx2 = i_canon - p2.x;
+                float cy2 = j_canon - p2.y;
+                float cx3 = i_canon - p3.x;
+                float cy3 = j_canon - p3.y;
+
+                if (triangleCheck(dx12, dx23, dx31, dy12, dy23, dy31, cx1, cx2, cx3, cy1, cy2, cy3, lt1, lt2, lt3))
+                {
+                    float lambda1 = ((dy23 * cx3) + ((-dx23) * cy3)) /
+                        ((dy23 * (-dx31)) + ((-dx23) * (-dy31)));
+                    float lambda2 = ((dy31 * cx3) + ((-dx31) * cy3)) /
+                        ((dy31 * dx23) + ((-dx31) * dy23));
+
+                    float lambda3 = (1 - lambda1 - lambda2);
+
+                    //unsigned char B = lambda1 * b1 + lambda2 * b2 + lambda3 * b3;
+                    //unsigned char G = lambda1 * g1 + lambda2 * g2 + lambda3 * g3;
+                    //unsigned char R = lambda1 * r1 + lambda2 * r2 + lambda3 * r3;
+
+                    float3 fragColor;
+
+                    float3 fragPos = v1.pos * lambda1 + v2.pos * lambda2 + v3.pos * lambda3;
+                    float3 fragNor = v1.normal * lambda1 + v2.normal * lambda2 + v3.normal * lambda3;
+                    fragNor = fragNor.Normalize();
+                    Vertex v(fragPos, fragNor);
+
+                    for (Light* l : lightsList)
+                    {
+                        fragColor += l->Calculate(&v, vp);
+                    }
+
+                    fragColor.saturate();
+
+                    float depth = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
+
+                    //depth = convertToRender(depth, 255);
+                    depth /= (-9.9f);
+                    depth *= 255;
+
+                    if (depth > depthBuffer[i][j][0])
+                    {
+                        colorBuffer[i][j][0] = fragColor.b * b;
+                        colorBuffer[i][j][1] = fragColor.g * g;
+                        colorBuffer[i][j][2] = fragColor.r * r;
+                        /*colorBuffer[i][j][0] = depth;
+                        colorBuffer[i][j][1] = depth;
+                        colorBuffer[i][j][2] = depth;*/
+                        colorBuffer[i][j][3] = 0xFF;
+                        depthBuffer[i][j][0] = depth;
+                    }
+                }
             }
         }
     }

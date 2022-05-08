@@ -5,17 +5,20 @@ VertexProcessor::VertexProcessor()
 	obj2world = float4x4::identity4x4();
 	world2view = float4x4::identity4x4();
 	view2proj = float4x4::identity4x4();
+
+	viewPos = float3(0, 0, -1);
+	viewDir = float3(0, 0, 1);
 }
 
 void VertexProcessor::setPerspective(float fovy, float aspect, float near, float far)
 {
 	fovy *= M_PI / 360;
-	float f = std::sin(fovy) / std::cos(fovy);
+	float f = std::cos(fovy) / std::sin(fovy);
 
-	view2proj.setColumn(0, float4(-f / aspect, 0, 0, 0));
-	view2proj.setColumn(1, float4(0, -f, 0, 0));
-	view2proj.setColumn(2, float4(0, 0, (far+near)/(near-far), 1));
-	view2proj.setColumn(3, float4(0, 0, 2*far*near/(near-far), 0));
+	view2proj.setColumn(0, float4(f / aspect, 0, 0, 0));
+	view2proj.setColumn(1, float4(0, f, 0, 0));
+	view2proj.setColumn(2, float4(0, 0, -(far+near)/(near-far), 0));
+	view2proj.setColumn(3, float4(0, 0, 2*far*near/(near-far), 1));
 }
 
 void VertexProcessor::setLookat(float3 eye, float3 center, float3 up)
@@ -96,7 +99,13 @@ void VertexProcessor::resetTransform()
 	obj2world = float4x4::identity4x4();
 }
 
+float3x3 VertexProcessor::calcNormalMatrix()
+{
+	normalMatrix = obj2world.subMatrix(3, 3).invert().transpose();
+	return normalMatrix;
+}
+
 float3x3 VertexProcessor::getNormalMatrix()
 {
-	return obj2world.invert().transpose().subMatrix(3, 3);
+	return normalMatrix;
 }

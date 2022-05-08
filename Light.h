@@ -7,6 +7,18 @@
 struct Vertex {
 	float3 pos;
 	float3 normal;
+
+	Vertex(float3 p, float3 n)
+	{
+		pos = p;
+		normal = n;
+	}
+
+	Vertex()
+	{
+		pos = float3();
+		normal = float3();
+	}
 };
 //struct Fragment;
 

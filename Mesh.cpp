@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 
 void Mesh::draw(Rasterizer* rasterizer, VertexProcessor* vp)
 {
@@ -11,18 +12,37 @@ void Mesh::draw(Rasterizer* rasterizer, VertexProcessor* vp)
 		triangle.b = verts[indices[t].b];
 		triangle.c = verts[indices[t].c];
 
-		DirectionalLight l(float3(0.5f, -0.5f, -0.0f), float3(0.1f, 0.1f, 0.1f), float3(0.0f, 0.0f, 0.5f), float3(0.5f, 0.0f, 0.0f), 32);
-		PointLight p(float3(-0.0f, 2.0f, -0.0f), float3(0.0f, 0.0f, 0.2f), float3(0.0f, 0.0f, 0.0f), float3(0.5f, 0.0f, 0.0f), 32);
+		rasterizer->drawTriangle(triangle.a, triangle.b, triangle.c, meshColor);
+	}
+}
 
-		float3 colorA = l.Calculate(&triangle.a, vp) + p.Calculate(&triangle.a, vp);
-		float3 colorB = l.Calculate(&triangle.b, vp) + p.Calculate(&triangle.b, vp);
-		float3 colorC = l.Calculate(&triangle.c, vp) + p.Calculate(&triangle.c, vp);
+void Mesh::drawGourard(Rasterizer* rasterizer, VertexProcessor* vp)
+{
+	for (int t = 0; t < tSize; t++)
+	{
+		Triangle triangle;
+		triangle.a = verts[indices[t].a];
+		triangle.b = verts[indices[t].b];
+		triangle.c = verts[indices[t].c];
+
+		float3 colorA;
+		float3 colorB;
+		float3 colorC;
+
+		for (Light* l : rasterizer->lightsList)
+		{
+			colorA += l->Calculate(&triangle.a, vp);
+			colorB += l->Calculate(&triangle.b, vp);
+			colorC += l->Calculate(&triangle.c, vp);
+		}
 
 		colorA.saturate();
 		colorB.saturate();
 		colorC.saturate();
 
 		rasterizer->drawTriangle(triangle.a.pos, triangle.b.pos, triangle.c.pos, colorA, colorB, colorC);
+
+		//rasterizer->drawTriangle(triangle.a, triangle.b, triangle.c, 0xFFFFFF);
 	}
 }
 

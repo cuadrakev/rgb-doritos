@@ -1,7 +1,6 @@
-#include "PointLight.h"
-#include <cmath>
+#include "SpotLight.h"
 
-float3 PointLight::Calculate(Fragment* frag, VertexProcessor* vp)
+float3 SpotLight::Calculate(Fragment* frag, VertexProcessor* vp)
 {
     float3x3 normalMat = vp->getNormalMatrix();
 
@@ -11,7 +10,7 @@ float3 PointLight::Calculate(Fragment* frag, VertexProcessor* vp)
 
     float3 fragPos = worldMat * frag->pos;
 
-    float3 lightDir = ((fragPos-pos)).Normalize();
+    float3 lightDir = ((fragPos - pos)).Normalize();
 
     float3 viewDir = vp->viewDir;
 
@@ -27,7 +26,13 @@ float3 PointLight::Calculate(Fragment* frag, VertexProcessor* vp)
 
     float specular = std::pow(dot2 * (dot2 > 0.0f), shiny);
 
-    float3 fragCol = (amb + diff * diffuse + spec * specular) * color;
+    float epsilon = outAngle - inAngle;
+
+    float angle = lightDir.DotProduct(dir.Normalize());
+
+    float intensity = mathlib::saturate((outAngle - angle) / epsilon);
+
+    float3 fragCol = (amb + diff * diffuse * intensity + spec * specular * intensity) * color;
 
     fragCol.saturate();
 

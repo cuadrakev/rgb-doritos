@@ -9,6 +9,8 @@ public:
 	float4x4 world2view;
 	float4x4 view2proj;
 
+	float3x3 normalMatrix;
+
 	float3 viewPos;
 	float3 viewDir;
 
@@ -27,6 +29,8 @@ public:
 	void resetTransform();
 
 	float4x4 getObj2Proj() { return view2proj * world2view * obj2world; }
+
+	float3x3 calcNormalMatrix();
 
 	float3x3 getNormalMatrix();
 };

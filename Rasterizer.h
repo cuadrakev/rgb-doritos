@@ -1,6 +1,8 @@
 #pragma once
 #include "float3.h"
 #include "VertexProcessor.h"
+#include "Light.h"
+#include <vector>
 
 typedef unsigned char*** IMAGE2D;
 
@@ -21,15 +23,19 @@ public:
         colorBuffer = initImage(b);
         depthBuffer = initImage(1);
         this->vp = vp;
+        lightsList.clear();
     }
 
     ~Rasterizer()
     {
+        lightsList.clear();
         deleteImage(colorBuffer);
         deleteImage(depthBuffer);
     }
 
 	void drawTriangle(float3 p1, float3 p2, float3 p3, int c1, int c2, int c3);
+
+	void drawTriangle(Vertex v1, Vertex v2, Vertex v3, int c);
 
 	void drawTriangle(float3 p1, float3 p2, float3 p3, float3 c1, float3 c2, float3 c3);
 
@@ -38,6 +44,8 @@ public:
 	void drawTriangle(float3 p1, float3 p2, float3 p3, int c);
 
     IMAGE2D colorBuffer;
+
+    std::vector<Light*> lightsList;
 
 private:
 

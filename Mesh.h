@@ -20,6 +20,7 @@ protected:
 
 	int vSize;
 	int tSize;
+	int meshColor = 0xFFFFFF;
 	int3* indices;
 	Vertex* verts;
 
@@ -27,6 +28,8 @@ public:
 
 	~Mesh() { delete[] indices; delete[] verts; }
 	void draw(Rasterizer* rasterizer, VertexProcessor* vp);
+	void drawGourard(Rasterizer* rasterizer, VertexProcessor* vp);
 	void makeNormals();
+	void setColor(int c) { meshColor = c; }
 };
 
