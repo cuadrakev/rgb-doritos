@@ -22,8 +22,8 @@ const int HEIGHT = 480;
 
 int main()
 {
-    float3 UP(.0f, 1.0f, .0f);
-    float3 cameraPos(.2f, -.6f, -1.5f);
+    float3 UP(.0f, -1.0f, .0f);
+    float3 cameraPos(-.3f, -.6f, 1.5f);
     float3 centrePos(0, 0, 0);
 
     int bgColor = 0x101010;
@@ -34,7 +34,7 @@ int main()
     vp->setPerspective(60, 4.0 / 3.0, -0.1, -100);
     vp->setLookat(cameraPos, centrePos, UP);
 
-    DirectionalLight* d = new DirectionalLight(float3(0.5f, -0.5f, -0.0f), float3(0.0f, 0.0f, 0.1f), float3(0.8f, 0.8f, 0.8f), float3(0.5f, 0.3f, 0.3f), 32);
+    DirectionalLight* d = new DirectionalLight(float3(0.5f, 0.2f, -0.0f), float3(0.0f, 0.0f, 0.1f), float3(0.8f, 0.8f, 0.8f), float3(0.5f, 0.3f, 0.3f), 32);
     //PointLight* p = new PointLight(float3(-0.5f, -.5f, -0.4f), float3(0.1f, 0.0f, 0.0f), float3(0.0f, 0.0f, 0.6f), float3(0.3f, 0.3f, 0.5f), 16);
     //SpotLight* s = new SpotLight(float3(-2.0f, -.0f, -2.0f), float3(0.0f, 0.05f, 0.0f), float3(0.0f, 0.4f, 0.0f), float3(0.1f, 0.f, 0.1f), 4, float3(1, 0, 1), 20, 30);
 
@@ -65,7 +65,7 @@ int main()
     vp->resetTransform();
     ////vp->scale(float3(0.8, 1.2, 1));
     ////vp->rotate(45, float3(1, 0, 0));
-    //vp->translate(float3(-0.0f, -0.0f, -0.3f));
+    //vp->translate(float3(-0.0f, -0.5f, -0.0f));
     vp->calcNormalMatrix();
     mesh3->setColor(0x0080FF);
     mesh3->draw(rasterizer, vp);

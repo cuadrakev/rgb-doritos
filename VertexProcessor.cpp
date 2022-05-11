@@ -17,8 +17,8 @@ void VertexProcessor::setPerspective(float fovy, float aspect, float near, float
 
 	view2proj.setColumn(0, float4(f / aspect, 0, 0, 0));
 	view2proj.setColumn(1, float4(0, f, 0, 0));
-	view2proj.setColumn(2, float4(0, 0, -(far+near)/(near-far), 0));
-	view2proj.setColumn(3, float4(0, 0, 2*far*near/(near-far), 1));
+	view2proj.setColumn(2, float4(0, 0, (far+near)/(near-far), 0));
+	view2proj.setColumn(3, float4(0, 0, 2*far*near/(near-far), -1));
 }
 
 void VertexProcessor::setLookat(float3 eye, float3 center, float3 up)

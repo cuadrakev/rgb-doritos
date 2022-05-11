@@ -11,7 +11,7 @@ float3 DirectionalLight::Calculate(Fragment* frag, VertexProcessor* vp)
 
     float3 color = float3(1, 1, 1);
 
-    float3 lightDir = (-pos).Normalize();
+    float3 lightDir = (pos).Normalize();
 
     float3 normal = (normalMat * frag->normal).Normalize();
 
